@@ -23,10 +23,11 @@ Browser.console.log "Hi from the renderer.js" |> ignore
 
 open Ref
 open Update
-open Emulator
+open ArmEmulator
 
 /// Access to `Emulator` project
-let dummyVariable = Emulator.Common.A
+/// ------------- CHANGE THIS --------------
+///let dummyVariable = Emulator.Common.A
 
 
 /// Initialization after `index.html` is loaded
