@@ -129,7 +129,7 @@ amdRequire(['vs/editor/editor.main'], function () {
       'mov r1, r0'
     ].join('\n'),
     language: 'arm',
-    theme: 'vs-light',
+    theme: 'vs-dark',
     renderWhitespace: 'all',
     roundedSelection: false,
     scrollBeyondLastLine: false

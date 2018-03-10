@@ -1,4 +1,4 @@
-(* 
+(*
     High Level Programming @ Imperial College London # Spring 2018
     Project: A user-friendly ARM emulator in F# and Web Technologies ( Github Electron & Fable Compliler )
     Contributors: Angelos Filos
@@ -17,6 +17,14 @@ let fontSize: HTMLSelectElement =
     Browser.document.getElementById("font-size") :?> HTMLSelectElement
 let register (id: int): HTMLElement =
     Browser.document.getElementById(sprintf "R%i" id)
+
+// Register formatting
+let registerFormat (id: int): HTMLButtonElement =
+    Browser.document.getElementById(sprintf "R%i-dec" id) :?> HTMLButtonElement
+
+let newCode: HTMLButtonElement =
+    Browser.document.getElementById("newCode") :?> HTMLButtonElement
+
 let explore: HTMLButtonElement =
     Browser.document.getElementById("explore") :?> HTMLButtonElement
 let save: HTMLButtonElement =

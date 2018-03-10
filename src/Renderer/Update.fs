@@ -1,4 +1,4 @@
-(* 
+(*
     High Level Programming @ Imperial College London # Spring 2018
     Project: A user-friendly ARM emulator in F# and Web Technologies ( Github Electron & Fable Compliler )
     Contributors: Angelos Filos
@@ -17,6 +17,11 @@ open Ref
 let fontSize (size: int) =
     let options = createObj ["fontSize" ==> size]
     window?code?updateOptions options
+
+let numType (id: int) (updatee: string) =
+    let el = Ref.registerFormat id
+    el.classList.remove("target")
+
 let register (id: int) (value: int) =
     let el = Ref.register id
     el.setAttribute("style", "background: #fbbc05")

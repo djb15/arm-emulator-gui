@@ -1,4 +1,4 @@
-(* 
+(*
     High Level Programming @ Imperial College London # Spring 2018
     Project: A user-friendly ARM emulator in F# and Web Technologies ( Github Electron & Fable Compliler )
     Contributors: Angelos Filos
@@ -41,9 +41,8 @@ let init () =
         Update.fontSize size
     )
     // TODO: Implement actions for the buttons
-    Ref.explore.addEventListener_click(fun _ ->
-        Browser.console.log "Code updated"
-        Update.code("mov r7, #5")
+    Ref.newCode.addEventListener_click(fun _ ->
+        Update.code("")
     )
     Ref.save.addEventListener_click(fun _ ->
         Browser.window.alert (sprintf "%A" (Ref.code ()))
@@ -60,5 +59,11 @@ let init () =
         Browser.console.log "flag N changed!" |> ignore
         Update.flag "N" true
     )
+
+    (Ref.registerFormat 0).addEventListener_click(fun _ ->
+        Update.register 0 (System.Random().Next 1000)
+    )
+
+    
 
 init()
