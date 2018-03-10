@@ -1,3 +1,5 @@
+git submodule update --init --recursive
+git submodule update --recursive --remote
 cd src\Emulator
 .paket\paket.bootstrapper.exe
 .paket\paket.exe install
