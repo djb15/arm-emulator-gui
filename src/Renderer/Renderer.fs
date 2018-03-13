@@ -51,6 +51,16 @@ let regClipboardAccess (reg:int) =
         Browser.window.alert(sprintf "Copied R%i" reg)
     )
 
+let regsFormatAll format = 
+    let updateReg reg = 
+        Update.registerFormat reg 123 format
+
+    (Ref.registerFormatAll format).addEventListener_click(fun _ ->
+        Update.registerFormatAll format
+        List.map updateReg [0..15]
+        |> List.iter id       
+    )
+
 
 /// Initialization after `index.html` is loaded
 let init () =
@@ -92,5 +102,8 @@ let init () =
     List.map regClipboardAccess [0..15]
     |> List.iter id
 
+    
+    List.map regsFormatAll ["dec";"bin";"hex"]
+    |> List.iter id
 
 init()

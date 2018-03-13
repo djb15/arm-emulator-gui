@@ -471,6 +471,7 @@
  .btn-enc, .btn-enc:active {
    background-color: #6d6c6d;
    border: 1px solid #c2c0c2;
+   width: 8%;
  }
 
  .btn-enc:focus, .btn-enc:active, {
@@ -479,10 +480,14 @@
    border: 1px solid #c2c0c2;
  }
 
+ .btn-enc-top, .btn-enc-top:active, .btn-enc-top:focus {
+  width: 33.3%;
+}
+
  .btn-reg-con, .btn-reg-con:active {
    background-color: #fff;
    border: 1px solid #c2c0c2;
-   width: 60%;
+   width: 61%;
  }
 
  .btn-reg-con:focus, .btn-reg-con:active {
@@ -753,6 +758,10 @@
 
  .pane-one-third {
    width: 33.3%;
+ }
+ 
+ .pane-half {
+   width: 50%;
  }
 
  img {

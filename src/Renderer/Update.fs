@@ -56,6 +56,26 @@ let registerFormat (id: int) (value: int) (format: string) =
         el.innerHTML <- sprintf "0b%s" (intToBinary value)
 
 
+let registerFormatAll (format: string) = 
+    let hexButton = Ref.registerFormatAll "hex"
+    let decButton = Ref.registerFormatAll "dec"
+    let binButton = Ref.registerFormatAll "bin"
+
+    match format with
+    | "dec" ->
+        hexButton.setAttribute("class", "btn btn-enc btn-enc-top")
+        decButton.setAttribute("class", "btn btn-enc btn-enc-top target")
+        binButton.setAttribute("class", "btn btn-enc btn-enc-top")
+    | "hex" ->
+        hexButton.setAttribute("class", "btn btn-enc btn-enc-top target")
+        decButton.setAttribute("class", "btn btn-enc btn-enc-top")
+        binButton.setAttribute("class", "btn btn-enc btn-enc-top")
+    | _ ->
+        hexButton.setAttribute("class", "btn btn-enc btn-enc-top")
+        decButton.setAttribute("class", "btn btn-enc btn-enc-top")
+        binButton.setAttribute("class", "btn btn-enc btn-enc-top target")
+
+
 let flag (id: string) (value: bool) =
     let el = Ref.flag id
     match value with
