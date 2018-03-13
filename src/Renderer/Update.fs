@@ -18,11 +18,6 @@ let fontSize (size: int) =
     let options = createObj ["fontSize" ==> size]
     window?code?updateOptions options
 
-let register (id: int) (value: int) =
-    let el = Ref.register id
-    el.setAttribute("style", "background: #fbbc05")
-    el.innerHTML <- sprintf "0x%X" value
-
 // Change register value to selected format
 let registerFormat (id: int) (value: int) (format: string) =
     let el = Ref.register id

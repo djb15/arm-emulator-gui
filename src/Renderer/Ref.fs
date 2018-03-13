@@ -26,6 +26,10 @@ let registerFormat (id: int) (format: string): HTMLButtonElement =
 let registerFormatAll (format: string): HTMLButtonElement = 
     Browser.document.getElementById(sprintf "registers-%s" format) :?> HTMLButtonElement
 
+// Randomise all registers button
+let registerRandomiseAll: HTMLButtonElement = 
+    Browser.document.getElementById("registers-randomise") :?> HTMLButtonElement
+
 // New file button
 let newCode: HTMLButtonElement =
     Browser.document.getElementById("newCode") :?> HTMLButtonElement

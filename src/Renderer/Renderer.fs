@@ -83,11 +83,7 @@ let init () =
     Ref.run.addEventListener_click(fun _ ->
         Browser.window.alert "NotImplemented :|"
     )
-    // just for fun!
-    (Ref.register 0).addEventListener_click(fun _ ->
-        let register = Ref.register 0
-        clipboard?writeText(register.innerHTML)
-    )
+
     (Ref.flag "N").addEventListener_click(fun _ ->
         Browser.console.log "flag N changed!" |> ignore
         Update.flag "N" true
@@ -102,8 +98,17 @@ let init () =
     List.map regClipboardAccess [0..15]
     |> List.iter id
 
-    
+    // Format all registers in dec/hex/bin format
     List.map regsFormatAll ["dec";"bin";"hex"]
     |> List.iter id
+
+    // Generate random numbers up to 30,000 just for demonstration (excluding SP, LR, PC)
+    Ref.registerRandomiseAll.addEventListener_click(fun _ ->
+        let randomUpdate reg = 
+            Update.registerFormat reg (System.Random().Next 30000) "hex"
+        
+        List.map randomUpdate [0..12]
+        |> List.iter id
+    )
 
 init()

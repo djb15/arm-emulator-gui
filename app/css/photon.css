@@ -457,6 +457,10 @@
    border: 1px solid #c2c0c2;
  }
 
+ .btn-reg-top, .btn-reg-top:active, .btn-reg-top:focus {
+    width: 40%;
+  }
+
  .btn-flag, .btn-flag:active {
    background-color: #6d6c6d;
    border: 1px solid #c2c0c2;
@@ -481,7 +485,7 @@
  }
 
  .btn-enc-top, .btn-enc-top:active, .btn-enc-top:focus {
-  width: 33.3%;
+    width: 8%;
 }
 
  .btn-reg-con, .btn-reg-con:active {
