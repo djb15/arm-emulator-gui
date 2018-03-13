@@ -165,7 +165,7 @@ The `js` scripts loaded by the `index.html`, **after** the DOM elements (statica
 
 1. Fetch `npm` packages by executing `yarn install`
 
-2. Restore `dotnet` packages by running `dotnet restore`
+2. Run `setup.bat` (on Windows). This downloads and updates the submodule, and installs their packages individually (necessary because of the submodule structure), then restores the global packages.
 
 3. Compile `fsharp` code to `javascript` using `webpack` by executing `yarn run start`
 

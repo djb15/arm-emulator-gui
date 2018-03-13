@@ -1,0 +1,3 @@
+[submodule "src/Emulator"]
+	path = src/Emulator
+	url = https://github.com/XavKearney/fsharp-arm-emulator
