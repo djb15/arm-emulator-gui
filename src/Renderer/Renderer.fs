@@ -29,6 +29,8 @@ open ArmEmulator
 /// ------------- CHANGE THIS --------------
 ///let dummyVariable = Emulator.Common.A
 
+// System wide clipboard
+let clipboard : obj = importMember "electron"
 
 // Adds event listener for every register format button
 let listMapper (reg,format) =
@@ -39,6 +41,15 @@ let listMapper (reg,format) =
 // Dec, hex and bin for input register number
 let regFormatCombinations (reg:int) = 
     [reg,"dec"; reg,"hex"; reg,"bin"]
+
+
+// Clipboard for all registers mapping function
+let regClipboardAccess (reg:int) = 
+    let register = Ref.register reg
+    register.addEventListener_click(fun _ ->   
+        clipboard?writeText(register.innerHTML) |> ignore
+        Browser.window.alert(sprintf "Copied R%i" reg)
+    )
 
 
 /// Initialization after `index.html` is loaded
@@ -64,8 +75,8 @@ let init () =
     )
     // just for fun!
     (Ref.register 0).addEventListener_click(fun _ ->
-        Browser.console.log "register R0 changed!" |> ignore
-        Update.register 0 (System.Random().Next 1000)
+        let register = Ref.register 0
+        clipboard?writeText(register.innerHTML)
     )
     (Ref.flag "N").addEventListener_click(fun _ ->
         Browser.console.log "flag N changed!" |> ignore
@@ -77,6 +88,9 @@ let init () =
     |> List.map listMapper 
     |> List.iter id
 
+    // Clipboard access for all registers
+    List.map regClipboardAccess [0..15]
+    |> List.iter id
 
 
 init()
