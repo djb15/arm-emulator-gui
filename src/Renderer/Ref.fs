@@ -19,9 +19,10 @@ let register (id: int): HTMLElement =
     Browser.document.getElementById(sprintf "R%i" id)
 
 // Register formatting
-let registerFormat (id: int): HTMLButtonElement =
-    Browser.document.getElementById(sprintf "R%i-dec" id) :?> HTMLButtonElement
+let registerFormat (id: int) (format: string): HTMLButtonElement =
+    Browser.document.getElementById(sprintf "R%i-%s" id format) :?> HTMLButtonElement
 
+// New file button
 let newCode: HTMLButtonElement =
     Browser.document.getElementById("newCode") :?> HTMLButtonElement
 

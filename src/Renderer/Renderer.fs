@@ -29,6 +29,17 @@ open Emulator
 let dummyVariable = Emulator.Common.A
 
 
+// Adds event listener for every register format button
+let listMapper (reg,format) =
+    (Ref.registerFormat reg format).addEventListener_click(fun _ ->
+        Update.registerFormat reg 123 format
+    )
+
+// Dec, hex and bin for input register number
+let regFormatCombinations (reg:int) = 
+    [reg,"dec"; reg,"hex"; reg,"bin"]
+
+
 /// Initialization after `index.html` is loaded
 let init () =
     Ref.fontSize.addEventListener_change(fun _ ->
@@ -60,10 +71,11 @@ let init () =
         Update.flag "N" true
     )
 
-    (Ref.registerFormat 0).addEventListener_click(fun _ ->
-        Update.register 0 (System.Random().Next 1000)
-    )
+    // List.map for all register formating (dec, bin, hex)
+    List.collect regFormatCombinations [0..15]
+    |> List.map listMapper 
+    |> List.iter id
 
-    
+
 
 init()

@@ -18,14 +18,29 @@ let fontSize (size: int) =
     let options = createObj ["fontSize" ==> size]
     window?code?updateOptions options
 
-let numType (id: int) (updatee: string) =
-    let el = Ref.registerFormat id
-    el.classList.remove("target")
-
 let register (id: int) (value: int) =
     let el = Ref.register id
     el.setAttribute("style", "background: #fbbc05")
     el.innerHTML <- sprintf "0x%X" value
+
+// Change register value to selected format
+let registerFormat (id: int) (value: int) (format: string) =
+    let el = Ref.register id
+    match format with
+    | "dec" ->
+      el.innerHTML <- sprintf "%i" value
+    | "hex" ->
+      el.innerHTML <- sprintf "0x%X" value
+    | _ ->
+        let rec intToBinary i =
+            match i with
+            | 0 | 1 -> string i
+            | _ ->
+                let bit = string (i % 2)
+                (intToBinary (i / 2)) + bit
+        el.innerHTML <- sprintf "0b%s" (intToBinary value)
+
+
 let flag (id: string) (value: bool) =
     let el = Ref.flag id
     match value with
