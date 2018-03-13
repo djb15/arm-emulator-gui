@@ -26,11 +26,22 @@ let register (id: int) (value: int) =
 // Change register value to selected format
 let registerFormat (id: int) (value: int) (format: string) =
     let el = Ref.register id
+    
+    let hexButton = Ref.registerFormat id "hex"
+    let decButton = Ref.registerFormat id "dec"
+    let binButton = Ref.registerFormat id "bin"
+    
     match format with
     | "dec" ->
-      el.innerHTML <- sprintf "%i" value
+        hexButton.setAttribute("class", "btn btn-enc")
+        decButton.setAttribute("class", "btn btn-enc target")
+        binButton.setAttribute("class", "btn btn-enc")
+        el.innerHTML <- sprintf "%i" value
     | "hex" ->
-      el.innerHTML <- sprintf "0x%X" value
+        hexButton.setAttribute("class", "btn btn-enc target")
+        decButton.setAttribute("class", "btn btn-enc")
+        binButton.setAttribute("class", "btn btn-enc")
+        el.innerHTML <- sprintf "0x%X" value
     | _ ->
         let rec intToBinary i =
             match i with
@@ -38,6 +49,10 @@ let registerFormat (id: int) (value: int) (format: string) =
             | _ ->
                 let bit = string (i % 2)
                 (intToBinary (i / 2)) + bit
+        
+        hexButton.setAttribute("class", "btn btn-enc")
+        decButton.setAttribute("class", "btn btn-enc")
+        binButton.setAttribute("class", "btn btn-enc target")
         el.innerHTML <- sprintf "0b%s" (intToBinary value)
 
 
