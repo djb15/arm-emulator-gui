@@ -61,6 +61,12 @@ let regsFormatAll format =
         |> List.iter id       
     )
 
+// Show or hide all the registers
+let showHideRegs format id = 
+    let el = Ref.registerGroup id
+    el.setAttribute("class", format)
+
+
 
 /// Initialization after `index.html` is loaded
 let init () =
@@ -87,6 +93,42 @@ let init () =
     (Ref.flag "N").addEventListener_click(fun _ ->
         Browser.console.log "flag N changed!" |> ignore
         Update.flag "N" true
+    )
+
+    Ref.memoryPanel.addEventListener_click(fun _ ->
+        
+        Ref.regsiterTop.setAttribute("class", "hidden")
+        
+        Ref.memoryPanel.setAttribute("class", "btn target")
+        Ref.registerPanel.setAttribute("class", "btn btn-default")
+        Ref.labelPanel.setAttribute("class", "btn btn-default")
+
+        List.map (showHideRegs "hidden") [0..15]
+        |> List.iter id
+    )
+
+    Ref.registerPanel.addEventListener_click(fun _ ->
+        
+        Ref.regsiterTop.setAttribute("class", "")
+
+        Ref.memoryPanel.setAttribute("class", "btn btn-default")
+        Ref.registerPanel.setAttribute("class", "btn target")
+        Ref.labelPanel.setAttribute("class", "btn btn-default")
+
+        List.map (showHideRegs "") [0..15]
+        |> List.iter id
+    )
+
+    Ref.labelPanel.addEventListener_click(fun _ ->
+        
+        Ref.regsiterTop.setAttribute("class", "hidden")
+
+        Ref.memoryPanel.setAttribute("class", "btn btn-default")
+        Ref.registerPanel.setAttribute("class", "btn btn-default")
+        Ref.labelPanel.setAttribute("class", "btn target")
+
+        List.map (showHideRegs "hidden") [0..15]
+        |> List.iter id
     )
 
     // List.map for all register formating (dec, bin, hex)
