@@ -98,6 +98,7 @@ let init () =
     Ref.memoryPanel.addEventListener_click(fun _ ->
         
         Ref.regsiterTop.setAttribute("class", "hidden")
+        Ref.labelsTable.setAttribute("class", "hidden")
         
         Ref.memoryPanel.setAttribute("class", "btn target")
         Ref.registerPanel.setAttribute("class", "btn btn-default")
@@ -110,6 +111,7 @@ let init () =
     Ref.registerPanel.addEventListener_click(fun _ ->
         
         Ref.regsiterTop.setAttribute("class", "")
+        Ref.labelsTable.setAttribute("class", "hidden")
 
         Ref.memoryPanel.setAttribute("class", "btn btn-default")
         Ref.registerPanel.setAttribute("class", "btn target")
@@ -122,6 +124,7 @@ let init () =
     Ref.labelPanel.addEventListener_click(fun _ ->
         
         Ref.regsiterTop.setAttribute("class", "hidden")
+        Ref.labelsTable.setAttribute("class", "")
 
         Ref.memoryPanel.setAttribute("class", "btn btn-default")
         Ref.registerPanel.setAttribute("class", "btn btn-default")

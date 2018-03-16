@@ -38,7 +38,7 @@ let registerGroup (id: int): HTMLElement =
 let regsiterTop : HTMLElement = 
     Browser.document.getElementById("register-top")
 
-
+// ------ Begin panel buttons -----
 let memoryPanel: HTMLButtonElement = 
     Browser.document.getElementById("memory") :?> HTMLButtonElement
 
@@ -47,6 +47,14 @@ let registerPanel: HTMLButtonElement =
 
 let labelPanel: HTMLButtonElement = 
     Browser.document.getElementById("labels") :?> HTMLButtonElement
+// ----- End panel buttons ------
+
+// The table containing labels
+let labelsTable: HTMLElement = 
+    Browser.document.getElementById("labels-table")
+
+
+
 
 // New file button
 let newCode: HTMLButtonElement =
