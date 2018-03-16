@@ -23,7 +23,7 @@ Browser.console.log "Hi from the renderer.js" |> ignore
 
 open Ref
 open Update
-open ArmEmulator
+open Emulator
 
 /// Access to `Emulator` project
 /// ------------- CHANGE THIS --------------
