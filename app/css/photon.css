@@ -2437,3 +2437,7 @@
  .target {
    background-color: #0C967A;
  }
+
+ .hidden {
+   display: none;
+ }

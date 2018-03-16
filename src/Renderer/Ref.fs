@@ -23,12 +23,38 @@ let registerFormat (id: int) (format: string): HTMLButtonElement =
     Browser.document.getElementById(sprintf "R%i-%s" id format) :?> HTMLButtonElement
 
 // Format all registers button
-let registerFormatAll (format: string): HTMLButtonElement = 
+let registerFormatAll (format: string): HTMLButtonElement =
     Browser.document.getElementById(sprintf "registers-%s" format) :?> HTMLButtonElement
 
 // Randomise all registers button
-let registerRandomiseAll: HTMLButtonElement = 
+let registerRandomiseAll: HTMLButtonElement =
     Browser.document.getElementById("registers-randomise") :?> HTMLButtonElement
+
+// Register group containing all fields for a register
+let registerGroup (id: int): HTMLElement =
+    Browser.document.getElementById(sprintf "R%i-group" id)
+
+// Top level buttons on register panel
+let regsiterTop : HTMLElement = 
+    Browser.document.getElementById("register-top")
+
+// ------ Begin panel buttons -----
+let memoryPanel: HTMLButtonElement = 
+    Browser.document.getElementById("memory") :?> HTMLButtonElement
+
+let registerPanel: HTMLButtonElement = 
+    Browser.document.getElementById("registers") :?> HTMLButtonElement
+
+let labelPanel: HTMLButtonElement = 
+    Browser.document.getElementById("labels") :?> HTMLButtonElement
+// ----- End panel buttons ------
+
+// The table containing labels
+let labelsTable: HTMLElement = 
+    Browser.document.getElementById("labels-table")
+
+
+
 
 // New file button
 let newCode: HTMLButtonElement =
