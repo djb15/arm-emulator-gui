@@ -125,8 +125,7 @@ amdRequire(['vs/editor/editor.main'], function () {
 
   window.code = monaco.editor.create(document.getElementById('editor'), {
     value: [
-      'mov r0, #5',
-      'mov r1, r0'
+      'ADD R0, R0, #1'
     ].join('\n'),
     language: 'arm',
     theme: 'vs-dark',

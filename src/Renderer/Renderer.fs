@@ -100,14 +100,15 @@ let init () =
             | Microsoft.FSharp.Core.Result.Ok x -> x
             | Microsoft.FSharp.Core.Result.Error _ -> failwithf "Failed"
 
-        let res = Emulator.TopLevel.parseThenExecLines lines initialise realNone
+        let res = 
+            match Emulator.TopLevel.parseThenExecLines lines initialise realNone with
+            | Microsoft.FSharp.Core.Result.Ok (returnData, returnSymbols) -> 
+                Update.flags returnData.Fl
+                Update.changeRegisters returnData.Regs
 
-        Browser.window.alert (sprintf "%A" res)
-    )
+            | Microsoft.FSharp.Core.Result.Error _ -> failwithf "Failed"
 
-    (Ref.flag "N").addEventListener_click(fun _ ->
-        Browser.console.log "flag N changed!" |> ignore
-        Update.flag "N" true
+        res
     )
 
     Ref.memoryPanel.addEventListener_click(fun _ ->

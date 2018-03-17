@@ -70,15 +70,29 @@ let registerFormatAll (format: string) =
         decButton.setAttribute("class", "btn btn-enc btn-enc-top")
         binButton.setAttribute("class", "btn btn-enc btn-enc-top target")
 
+// Change the register values in the GUI after execution
+let changeRegisters (regs: Map<CommonData.RName,uint32>) =
+    let frontEndReg (key: CommonData.RName) (value: uint32) =
+        let regNum = key.RegNum
+        let el = Ref.register regNum
+        el.innerHTML <- sprintf "%i" value
+    Map.iter frontEndReg regs
 
-let flag (id: string) (value: bool) =
-    let el = Ref.flag id
-    match value with
-        | false ->
-            el.setAttribute("style", "background: #fcfcfc")
-            el.innerHTML <- sprintf "%i" 0
-        | true ->
-            el.setAttribute("style", "background: #4285f4")
-            el.innerHTML <- sprintf "%i" 1
+let flags (values: CommonData.Flags) =
+    let setFlag id value = 
+        let el = Ref.flag id
+        match value with
+            | false ->
+                el.setAttribute("style", "background: #fcfcfc")
+                el.innerHTML <- sprintf "%i" 0
+            | true ->
+                el.setAttribute("style", "background: #4285f4")
+                el.innerHTML <- sprintf "%i" 1
+
+    setFlag "N" values.N
+    setFlag "Z" values.Z
+    setFlag "C" values.C
+    setFlag "V" values.V
+
 let code (text: string) =
     window?code?setValue(text)
