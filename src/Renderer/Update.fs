@@ -94,5 +94,16 @@ let flags (values: CommonData.Flags) =
     setFlag "C" values.C
     setFlag "V" values.V
 
+let toggleFlag (id: string) =
+    let el = Ref.flag id
+    let currentVal = el.innerHTML
+    match currentVal with
+        | "1" ->
+            el.setAttribute("style", "background: #fcfcfc")
+            el.innerHTML <- sprintf "%i" 0
+        | _ ->
+            el.setAttribute("style", "background: #4285f4")
+            el.innerHTML <- sprintf "%i" 1
+
 let code (text: string) =
     window?code?setValue(text)

@@ -68,7 +68,11 @@ let showHideRegs format id =
     let el = Ref.registerGroup id
     el.setAttribute("class", format)
 
-
+ 
+let flagListener flag = 
+    (Ref.flag flag).addEventListener_click(fun _ ->
+        Update.toggleFlag flag
+    )
 
 /// Initialization after `index.html` is loaded
 let init () =
@@ -192,5 +196,8 @@ let init () =
         List.map randomUpdate [0..12]
         |> List.iter id
     )
+
+    List.map flagListener ["C";"N";"V";"Z"]
+    |> List.iter id
 
 init()
