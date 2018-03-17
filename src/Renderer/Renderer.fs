@@ -35,7 +35,8 @@ let clipboard : obj = importMember "electron"
 // Adds event listener for every register format button
 let listMapper (reg,format) =
     (Ref.registerFormat reg format).addEventListener_click(fun _ ->
-        Update.registerFormat reg 123 format
+        let value = int32 (Ref.register reg).innerHTML
+        Update.registerFormat reg value format
     )
 
 // Dec, hex and bin for input register number
@@ -53,7 +54,8 @@ let regClipboardAccess (reg:int) =
 
 let regsFormatAll format = 
     let updateReg reg = 
-        Update.registerFormat reg 123 format
+        let value = int32 (Ref.register reg).innerHTML
+        Update.registerFormat reg value format
 
     (Ref.registerFormatAll format).addEventListener_click(fun _ ->
         Update.registerFormatAll format
@@ -87,7 +89,20 @@ let init () =
         Browser.window.alert (sprintf "%A" (Ref.code ()))
     )
     Ref.run.addEventListener_click(fun _ ->
-        Browser.window.alert "NotImplemented :|"
+        let lines = 
+            (Ref.code ()).Split('\n')
+            |> Array.toList
+
+        let realNone = Microsoft.FSharp.Core.Option.None
+
+        let initialise = 
+            match Emulator.TopLevel.initDataPath realNone realNone realNone with
+            | Microsoft.FSharp.Core.Result.Ok x -> x
+            | Microsoft.FSharp.Core.Result.Error _ -> failwithf "Failed"
+
+        let res = Emulator.TopLevel.parseThenExecLines lines initialise realNone
+
+        Browser.window.alert (sprintf "%A" res)
     )
 
     (Ref.flag "N").addEventListener_click(fun _ ->
