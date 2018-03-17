@@ -95,8 +95,29 @@ let init () =
 
         let realNone = Microsoft.FSharp.Core.Option.None
 
+        // Gets initial register values from GUI
+        let initialRegs =
+            let regVal id = CommonData.register id, uint32 (Ref.register id).innerHTML
+            List.map regVal [0..15]
+            |> Map.ofList
+            |> Some
+
+        let initialFlags = 
+            let flagVal id = 
+                match (Ref.flag id).innerHTML with
+                | "0" -> false
+                | _ -> true
+
+            Some
+                { 
+                    CommonData.Flags.N = flagVal "N"; 
+                    CommonData.Flags.Z = flagVal "Z"; 
+                    CommonData.Flags.C = flagVal "C"; 
+                    CommonData.Flags.V = flagVal "V"
+                }          
+
         let initialise = 
-            match Emulator.TopLevel.initDataPath realNone realNone realNone with
+            match Emulator.TopLevel.initDataPath initialFlags initialRegs realNone with
             | Microsoft.FSharp.Core.Result.Ok x -> x
             | Microsoft.FSharp.Core.Result.Error _ -> failwithf "Failed"
 
