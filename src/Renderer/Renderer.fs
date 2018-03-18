@@ -8,14 +8,10 @@
 
 module Renderer
 
-open Fable.Core
 open Fable.Core.JsInterop
 open Fable.Import
-open Electron
-open Node.Exports
-open Fable.PowerPack
-
-open Fable.Import.Browser
+open FSharp.Core
+open CommonData
 
 // open DevTools to see the message
 // Menu -> View -> Toggle Developer Tools
@@ -97,8 +93,6 @@ let init () =
             (Ref.code ()).Split('\n')
             |> Array.toList
 
-        let realNone = Microsoft.FSharp.Core.Option.None
-
         // Gets initial register values from GUI
         let initialRegs =
             let regVal id = CommonData.register id, uint32 (Ref.register id).innerHTML
@@ -114,24 +108,24 @@ let init () =
 
             Some
                 { 
-                    CommonData.Flags.N = flagVal "N"; 
-                    CommonData.Flags.Z = flagVal "Z"; 
-                    CommonData.Flags.C = flagVal "C"; 
-                    CommonData.Flags.V = flagVal "V"
+                    Flags.N = flagVal "N"; 
+                    Flags.Z = flagVal "Z"; 
+                    Flags.C = flagVal "C"; 
+                    Flags.V = flagVal "V"
                 }          
 
         let initialise = 
-            match Emulator.TopLevel.initDataPath initialFlags initialRegs realNone with
-            | Microsoft.FSharp.Core.Result.Ok x -> x
-            | Microsoft.FSharp.Core.Result.Error _ -> failwithf "Failed"
+            match Emulator.TopLevel.initDataPath initialFlags initialRegs None with
+            | Ok x -> x
+            | Error _ -> failwithf "Failed"
 
         let res = 
-            match Emulator.TopLevel.parseThenExecLines lines initialise realNone with
-            | Microsoft.FSharp.Core.Result.Ok (returnData, returnSymbols) -> 
+            match Emulator.TopLevel.parseThenExecLines lines initialise None with
+            | Ok (returnData, returnSymbols) -> 
                 Update.flags returnData.Fl
                 Update.changeRegisters returnData.Regs
 
-            | Microsoft.FSharp.Core.Result.Error _ -> failwithf "Failed"
+            | Error _ -> failwithf "Failed"
 
         res
     )
