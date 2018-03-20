@@ -131,9 +131,11 @@ let init () =
             | Error _ -> failwithf "Failed"
 
         let res = 
-            match Emulator.TopLevel.parseThenExecLines lines initialise None with
+            match Emulator.TopLevel.parseThenExecLines lines initialise (Some Map.empty) with
             | Ok (returnData, returnSymbols) -> 
                 Update.flags returnData.Fl
+                Browser.console.log (Map.toList returnData.MM)
+                Update.symbols returnSymbols returnData.MM
                 Update.changeRegisters returnData.Regs
 
             | Error _ -> failwithf "Failed"

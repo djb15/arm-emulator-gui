@@ -53,6 +53,8 @@ let labelPanel: HTMLButtonElement =
 let labelsTable: HTMLElement = 
     Browser.document.getElementById("labels-table")
 
+let labelsTableBody: HTMLElement = 
+    Browser.document.getElementById("labels-table-body")
 
 
 

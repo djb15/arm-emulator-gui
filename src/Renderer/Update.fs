@@ -9,11 +9,14 @@
 module Update
 
 open Fable.Core
+open Fable.Import
 open Fable.Core.JsInterop
 open Fable.Import.Browser
+open FSharp.Core
 
 open Ref
 open Fable.Import.Electron
+open CommonData
 
 
 let fontSize (size: int) =
@@ -79,6 +82,37 @@ let changeRegisters (regs: Map<CommonData.RName,uint32>) =
         let el = Ref.register regNum
         el.innerHTML <- sprintf "%i" value
     Map.iter frontEndReg regs
+
+
+let symbols (sym: CommonLex.SymbolTable) (mem: CommonData.MachineMemory<'INS>) = 
+    let el = Ref.labelsTableBody
+
+    let symbolHTML (labelType:string) (labelName:string) (labelValue:uint32) (labelContent:string) = 
+        sprintf """<tr>
+            <td>%s</td>
+            <td>%s</td>
+            <td>%X</td>
+            <td>%s</td>
+        </tr>""" labelType labelName labelValue labelContent
+
+    let findInMemory (label,value) =
+        let convertValue = WA value 
+        match mem.TryFind convertValue with
+        | Some memory ->
+            match memory with
+            | CommonData.DataLoc x -> symbolHTML "Data" label convertValue.Val (sprintf "%X" x)
+            | CommonData.Code _ -> symbolHTML "Code" label convertValue.Val "Code"
+        | Microsoft.FSharp.Core.Option.None -> symbolHTML "EQU" label convertValue.Val "N/A"
+
+
+    let finalSymbolTable = 
+        Map.toList sym
+        |> List.map findInMemory
+        |> String.concat "\n"
+
+    
+    el.innerHTML <- finalSymbolTable
+
 
 let flags (values: CommonData.Flags) =
     let setFlag id value = 
