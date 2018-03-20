@@ -175,6 +175,18 @@ let init () =
         |> List.iter id
     )
 
+
+    // Reset button click event listener
+    Ref.reset.addEventListener_click(fun _ ->
+        let setTo0 reg = 
+            Update.registerFormat reg 0 "dec"
+        
+        Update.registerFormatAll "dec"
+
+        List.map setTo0 [0..15]
+        |> List.iter id
+    )
+
     // List.map for all register formating (dec, bin, hex)
     List.collect regFormatCombinations [0..15]
     |> List.map listMapper 

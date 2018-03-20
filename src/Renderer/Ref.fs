@@ -66,6 +66,11 @@ let save: HTMLButtonElement =
     Browser.document.getElementById("save") :?> HTMLButtonElement
 let run: HTMLButtonElement =
     Browser.document.getElementById("run") :?> HTMLButtonElement
+
+// Reset button
+let reset: HTMLButtonElement = 
+    Browser.document.getElementById("reset") :?> HTMLButtonElement
+
 let flag (id: string): HTMLElement =
     Browser.document.getElementById(sprintf "flag_%s" id)
 let code: unit -> string = fun _ ->
