@@ -13,6 +13,8 @@ open Fable.Core.JsInterop
 open Fable.Import.Browser
 
 open Ref
+open Fable.Import.Electron
+
 
 let fontSize (size: int) =
     let options = createObj ["fontSize" ==> size]

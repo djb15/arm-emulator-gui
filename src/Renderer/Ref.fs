@@ -60,8 +60,8 @@ let labelsTable: HTMLElement =
 let newCode: HTMLButtonElement =
     Browser.document.getElementById("newCode") :?> HTMLButtonElement
 
-let explore: HTMLButtonElement =
-    Browser.document.getElementById("explore") :?> HTMLButtonElement
+let openFile: HTMLButtonElement =
+    Browser.document.getElementById("open") :?> HTMLButtonElement
 let save: HTMLButtonElement =
     Browser.document.getElementById("save") :?> HTMLButtonElement
 let run: HTMLButtonElement =

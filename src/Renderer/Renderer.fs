@@ -19,14 +19,22 @@ Browser.console.log "Hi from the renderer.js" |> ignore
 
 open Ref
 open Update
-open Emulator
+open Emulator                  
 
 /// Access to `Emulator` project
 /// ------------- CHANGE THIS --------------
 ///let dummyVariable = Emulator.Common.A
 
 // System wide clipboard
-let clipboard : obj = importMember "electron"
+let clipboard: obj = importMember "electron"
+
+let fs: obj = importDefault "fs"
+
+let errorBox (title: string) (text: string) = (importDefault "electron")?remote?dialog?showErrorBox(title, text)
+
+type OpenFileOptions = {title: string option}
+
+let openFileWindow (options: OpenFileOptions) callback = (importDefault "electron")?remote?dialog?showOpenDialog(options, callback)
 
 // Adds event listener for every register format button
 let listMapper (reg,format) =
@@ -179,6 +187,17 @@ let init () =
 
         List.map setTo0 [0..15]
         |> List.iter id
+    )
+
+    Ref.openFile.addEventListener_click(fun _ ->
+        let options = {title = None}
+        let callback (filePath: string array) =
+            let formatText err data = 
+                Browser.console.log (data)
+                Update.code data
+            fs?readFile(filePath.[0], "utf8", formatText)
+
+        openFileWindow options callback
     )
 
     // List.map for all register formating (dec, bin, hex)
