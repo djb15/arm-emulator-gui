@@ -136,6 +136,7 @@ let init () =
                 Update.flags returnData.Fl
                 Browser.console.log (Map.toList returnData.MM)
                 Update.symbols returnSymbols returnData.MM
+                Update.memory returnData.MM
                 Update.changeRegisters returnData.Regs
 
             | Error _ -> failwithf "Failed"
@@ -147,6 +148,7 @@ let init () =
         
         Ref.regsiterTop.setAttribute("class", "hidden")
         Ref.labelsTable.setAttribute("class", "hidden")
+        Ref.memoryTable.setAttribute("class", "")
         
         Ref.memoryPanel.setAttribute("class", "btn target")
         Ref.registerPanel.setAttribute("class", "btn btn-default")
@@ -160,6 +162,7 @@ let init () =
         
         Ref.regsiterTop.setAttribute("class", "")
         Ref.labelsTable.setAttribute("class", "hidden")
+        Ref.memoryTable.setAttribute("class", "hidden")
 
         Ref.memoryPanel.setAttribute("class", "btn btn-default")
         Ref.registerPanel.setAttribute("class", "btn target")
@@ -173,6 +176,7 @@ let init () =
         
         Ref.regsiterTop.setAttribute("class", "hidden")
         Ref.labelsTable.setAttribute("class", "")
+        Ref.memoryTable.setAttribute("class", "hidden")
 
         Ref.memoryPanel.setAttribute("class", "btn btn-default")
         Ref.registerPanel.setAttribute("class", "btn btn-default")

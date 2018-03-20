@@ -91,25 +91,57 @@ let symbols (sym: CommonLex.SymbolTable) (mem: CommonData.MachineMemory<'INS>) =
         sprintf """<tr>
             <td>%s</td>
             <td>%s</td>
-            <td>%X</td>
+            <td>0x%X</td>
             <td>%s</td>
         </tr>""" labelType labelName labelValue labelContent
+
+    let memoryHTML (memLocation:uint32) (memContents:string) = 
+        sprintf """<tr>
+            <td>0x%X</td>
+            <td>%s</td>
+        </tr>""" memLocation memContents
+
 
     let findInMemory (label,value) =
         let convertValue = WA value 
         match mem.TryFind convertValue with
         | Some memory ->
             match memory with
-            | CommonData.DataLoc x -> symbolHTML "Data" label convertValue.Val (sprintf "%X" x)
-            | CommonData.Code _ -> symbolHTML "Code" label convertValue.Val "Code"
-        | Microsoft.FSharp.Core.Option.None -> symbolHTML "EQU" label convertValue.Val "N/A"
+            | CommonData.DataLoc x -> (symbolHTML "Data" label convertValue.Val (sprintf "0x%X" x))
+            | CommonData.Code _ -> (symbolHTML "Code" label convertValue.Val "Code")
+        | Microsoft.FSharp.Core.Option.None -> (symbolHTML "EQU" label convertValue.Val "N/A")
 
 
     let finalSymbolTable = 
         Map.toList sym
         |> List.map findInMemory
         |> String.concat "\n"
+    
+    el.innerHTML <- finalSymbolTable
 
+
+let memory (mem: CommonData.MachineMemory<'INS>) = 
+    let el = Ref.memoryTableBody
+
+    let memoryHTML (memLocation:uint32) (memContents:string) = 
+        sprintf """<tr>
+            <td>0x%X</td>
+            <td>%s</td>
+        </tr>""" memLocation memContents
+
+
+    let findInMemory (loc:WAddr,value) =
+        let location = loc
+
+        match value with
+        | CommonData.DataLoc x -> (memoryHTML location.Val (sprintf "0x%X" x))
+        | CommonData.Code _ -> (memoryHTML location.Val "Code")
+
+
+    let finalSymbolTable = 
+        Map.toList mem
+        |> List.map findInMemory
+        |> String.concat "\n"
     
     el.innerHTML <- finalSymbolTable
 

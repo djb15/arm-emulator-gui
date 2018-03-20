@@ -56,6 +56,13 @@ let labelsTable: HTMLElement =
 let labelsTableBody: HTMLElement = 
     Browser.document.getElementById("labels-table-body")
 
+// The table containing memory contents
+let memoryTable: HTMLElement = 
+    Browser.document.getElementById("memory-table")
+
+let memoryTableBody: HTMLElement = 
+    Browser.document.getElementById("memory-table-body")
+
 
 
 // New file button
