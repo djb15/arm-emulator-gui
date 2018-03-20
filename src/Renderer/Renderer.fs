@@ -32,9 +32,14 @@ let fs: obj = importDefault "fs"
 
 let errorBox (title: string) (text: string) = (importDefault "electron")?remote?dialog?showErrorBox(title, text)
 
-type OpenFileOptions = {title: string option}
+type FileFilter = {name: string; extensions: string list}
+let fileRestriction = {name = "ARM"; extensions = ["s"]}
+
+type OpenFileOptions = {title: string option; filters: FileFilter list}
 
 let openFileWindow (options: OpenFileOptions) callback = (importDefault "electron")?remote?dialog?showOpenDialog(options, callback)
+
+let saveFileWindow (options: OpenFileOptions) callback = (importDefault "electron")?remote?dialog?showSaveDialog(options, callback)
 
 // Adds event listener for every register format button
 let listMapper (reg,format) =
@@ -93,9 +98,7 @@ let init () =
     Ref.newCode.addEventListener_click(fun _ ->
         Update.code("")
     )
-    Ref.save.addEventListener_click(fun _ ->
-        Browser.window.alert (sprintf "%A" (Ref.code ()))
-    )
+
     Ref.run.addEventListener_click(fun _ ->
         let lines = 
             (Ref.code ()).Split('\n')
@@ -190,14 +193,24 @@ let init () =
     )
 
     Ref.openFile.addEventListener_click(fun _ ->
-        let options = {title = None}
+        let options = {title = None; filters = [fileRestriction]}
         let callback (filePath: string array) =
             let formatText err data = 
-                Browser.console.log (data)
                 Update.code data
             fs?readFile(filePath.[0], "utf8", formatText)
 
         openFileWindow options callback
+    )
+
+    Ref.save.addEventListener_click(fun _ ->
+        let options = {title = None; filters = [fileRestriction]}
+        let callback (fileName: string) =
+            let errorCallback err = 
+                Browser.console.log (err)          
+            fs?writeFile(fileName, Ref.code (), errorCallback)
+
+        saveFileWindow options callback
+
     )
 
     // List.map for all register formating (dec, bin, hex)
