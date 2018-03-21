@@ -170,9 +170,11 @@ let init () =
                     | TopLevel.ERRIMULTMEM err ->
                         Update.error err lineNum |> ignore 
                         Update.changeEmulationStatus (sprintf "Error on line %i" (lineNum + 1u)) true
+                    | TopLevel.ERRTOPLEVEL err ->
+                        Update.error err lineNum |> ignore 
+                        Update.changeEmulationStatus (sprintf "Error on line %i" (lineNum + 1u)) true
                     | _ ->
                         Browser.window.alert("Something went wrong")
-                          
                 | TopLevel.ERRTOPLEVEL err ->
                     Browser.window.alert(err)
                     Update.changeEmulationStatus "Emulation failed" true                  
