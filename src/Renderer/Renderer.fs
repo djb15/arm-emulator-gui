@@ -138,6 +138,7 @@ let init () =
                 Update.memory returnData.MM
                 Update.clearError "holder" |> ignore
                 Update.changeRegisters returnData.Regs
+                Update.changeEmulationStatus "Emulation Complete" false
 
             | Error err -> 
                 match err with
@@ -145,20 +146,25 @@ let init () =
                     match errorType with
                     | TopLevel.ERRIARITH err ->
                         Update.error err lineNum |> ignore
+                        Update.changeEmulationStatus (sprintf "Error on line %i" (lineNum + 1u)) true
 
                     | TopLevel.ERRIBITARITH err ->
                         Update.error err lineNum |> ignore 
+                        Update.changeEmulationStatus (sprintf "Error on line %i" (lineNum + 1u)) true
 
                     | TopLevel.ERRIMEM err ->
                         Update.error err lineNum |> ignore
+                        Update.changeEmulationStatus (sprintf "Error on line %i" (lineNum + 1u)) true
 
                     | TopLevel.ERRIMULTMEM err ->
                         Update.error err lineNum |> ignore 
+                        Update.changeEmulationStatus (sprintf "Error on line %i" (lineNum + 1u)) true
                     | _ ->
                         Browser.window.alert("Something went wrong")
                           
                 | TopLevel.ERRTOPLEVEL err ->
-                    Browser.window.alert(err)                   
+                    Browser.window.alert(err)
+                    Update.changeEmulationStatus "Emulation failed" true                  
                 | _ -> 
                     Browser.window.alert("Something went wrong")
 
@@ -214,6 +220,9 @@ let init () =
             Update.registerFormat reg 0 "dec"
         
         Update.registerFormatAll "dec"
+
+        Ref.emulator.innerHTML <- "Emulator Off"
+        Ref.emulator.setAttribute("style", "")
 
         List.map setTo0 [0..15]
         |> List.iter id

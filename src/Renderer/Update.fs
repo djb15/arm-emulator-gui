@@ -181,3 +181,15 @@ let error err lineNum =
 
 let clearError _ =
     window?clearError("")
+
+
+let changeEmulationStatus status err = 
+    let el = Ref.emulator
+    el.innerHTML <- (sprintf "%s" status)
+    match err with
+    | false ->
+        el.setAttribute("style", "background: #ffe290")
+    | true ->
+        el.setAttribute("style", "background: #e57c8e")
+
+    
