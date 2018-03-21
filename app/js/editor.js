@@ -47,6 +47,11 @@ amdRequire(['vs/editor/editor.main'], function () {
       'ADCS', 'BEQ', 'B'
     ],
 
+    registers: [
+      'R0','R1','R2','R3','R4','R5','R6','R7','R8','R9','R10','R11','R12',
+      'R13', 'R14', 'R15', 'SP', 'LR', 'SP'
+    ],
+
     // we include these common regular expressions
     symbols: /[=><!~?:&|+\-*\/\^%]+/,
 
@@ -60,7 +65,8 @@ amdRequire(['vs/editor/editor.main'], function () {
         [/[a-z_$][\w$]*/, {
           cases: {
             '@keywords': 'keyword',
-            '@default': 'identifier'
+            '@registers': 'register',
+            '@default': 'identifier',
           }
         }],
 
@@ -103,7 +109,6 @@ amdRequire(['vs/editor/editor.main'], function () {
 
       ],
 
-
       string: [
         [/[^\\"]+/, 'string'],
         [/@escapes/, 'string.escape'],
@@ -124,12 +129,13 @@ amdRequire(['vs/editor/editor.main'], function () {
     inherit: true, // can also be false to completely replace the builtin rules
     rules: [
       { token: 'comment', foreground: '8c8c8c', fontStyle: 'italic' },
+      { token: 'register', fontStyle: 'bold' },
     ]
   });
 
   window.code = monaco.editor.create(document.getElementById('editor'), {
     value: [
-      'ADD R0, R0, #1'
+      'ADD R0, R0, #1; test comment'
     ].join('\n'),
     language: 'arm',
     theme: 'customVisualTheme',
