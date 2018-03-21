@@ -35,7 +35,7 @@ let registerGroup (id: int): HTMLElement =
     Browser.document.getElementById(sprintf "R%i-group" id)
 
 // Top level buttons on register panel
-let regsiterTop : HTMLElement = 
+let registerTop : HTMLElement = 
     Browser.document.getElementById("register-top")
 
 // ------ Begin panel buttons -----

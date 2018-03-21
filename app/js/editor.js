@@ -134,4 +134,29 @@ amdRequire(['vs/editor/editor.main'], function () {
     scrollBeyondLastLine: false
   });
 
+  window.setError = function (err, line){
+    var startIndex = 0;
+    var errorMarker =
+      [{
+        severity: monaco.Severity.Error,
+        startLineNumber: line,
+        startColumn: 1,
+        endLineNumber: line,
+        endColumn: 1000,
+        message: err
+      }];
+    
+    var model = monaco.editor.getModels()[0];
+    
+    monaco.editor.setModelMarkers(model, "arm", errorMarker);
+  };
+
+  window.clearError = function(holder){
+    var errorMarker = [{}];
+    console.log("clear markers");
+    var model = monaco.editor.getModels()[0];
+    
+    monaco.editor.setModelMarkers(model, "arm", errorMarker);
+  };
+
 });

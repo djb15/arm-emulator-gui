@@ -175,3 +175,9 @@ let toggleFlag (id: string) =
 
 let code (text: string) =
     window?code?setValue(text)
+
+let error err lineNum =
+    window?setError(err, lineNum + 1u)
+
+let clearError _ =
+    window?clearError("")

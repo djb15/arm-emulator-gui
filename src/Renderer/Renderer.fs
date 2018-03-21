@@ -106,14 +106,14 @@ let init () =
 
         // Gets initial register values from GUI
         let initialRegs =
-            let regVal id = CommonData.register id, uint32 (Ref.register id).innerHTML
+            let regVal regId = CommonData.register regId, uint32 (Ref.register regId).innerHTML
             List.map regVal [0..15]
             |> Map.ofList
             |> Some
 
         let initialFlags = 
-            let flagVal id = 
-                match (Ref.flag id).innerHTML with
+            let flagVal flagId = 
+                match (Ref.flag flagId).innerHTML with
                 | "0" -> false
                 | _ -> true
 
@@ -134,19 +134,40 @@ let init () =
             match Emulator.TopLevel.parseThenExecLines lines initialise (Some Map.empty) with
             | Ok (returnData, returnSymbols) -> 
                 Update.flags returnData.Fl
-                Browser.console.log (Map.toList returnData.MM)
                 Update.symbols returnSymbols returnData.MM
                 Update.memory returnData.MM
+                Update.clearError "holder" |> ignore
                 Update.changeRegisters returnData.Regs
 
-            | Error _ -> failwithf "Failed"
+            | Error err -> 
+                match err with
+                | TopLevel.ERRLINE (errorType,lineNum) ->
+                    match errorType with
+                    | TopLevel.ERRIARITH err ->
+                        Update.error err lineNum |> ignore
+
+                    | TopLevel.ERRIBITARITH err ->
+                        Update.error err lineNum |> ignore 
+
+                    | TopLevel.ERRIMEM err ->
+                        Update.error err lineNum |> ignore
+
+                    | TopLevel.ERRIMULTMEM err ->
+                        Update.error err lineNum |> ignore 
+                    | _ ->
+                        Browser.window.alert("Something went wrong")
+                          
+                | TopLevel.ERRTOPLEVEL err ->
+                    Browser.window.alert(err)                   
+                | _ -> 
+                    Browser.window.alert("Something went wrong")
 
         res
     )
 
     Ref.memoryPanel.addEventListener_click(fun _ ->
         
-        Ref.regsiterTop.setAttribute("class", "hidden")
+        Ref.registerTop.setAttribute("class", "hidden")
         Ref.labelsTable.setAttribute("class", "hidden")
         Ref.memoryTable.setAttribute("class", "")
         
@@ -160,7 +181,7 @@ let init () =
 
     Ref.registerPanel.addEventListener_click(fun _ ->
         
-        Ref.regsiterTop.setAttribute("class", "")
+        Ref.registerTop.setAttribute("class", "")
         Ref.labelsTable.setAttribute("class", "hidden")
         Ref.memoryTable.setAttribute("class", "hidden")
 
@@ -174,7 +195,7 @@ let init () =
 
     Ref.labelPanel.addEventListener_click(fun _ ->
         
-        Ref.regsiterTop.setAttribute("class", "hidden")
+        Ref.registerTop.setAttribute("class", "hidden")
         Ref.labelsTable.setAttribute("class", "")
         Ref.memoryTable.setAttribute("class", "hidden")
 
