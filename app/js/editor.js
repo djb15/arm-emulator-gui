@@ -85,10 +85,12 @@ amdRequire(['vs/editor/editor.main'], function () {
         // numbers
         [/\d*\.\d+([eE][\-+]?\d+)?/, 'number.float'],
         [/0[xX][0-9a-fA-F]+/, 'number.hex'],
+        [/0[b][0-1]+/, 'number.bin'],
         [/\d+/, 'number'],
 
-        // delimiter: after number because of .\d floats
-        [/[;,.]/, 'delimiter'],
+        // // delimiter: after number because of .\d floats
+        [/[,.]/, 'delimiter'],
+        [/\;+.*/, 'comment', '@push'],
 
         // strings
         [/"([^"\\]|\\.)*$/, 'string.invalid'],  // non-teminated string
@@ -101,12 +103,6 @@ amdRequire(['vs/editor/editor.main'], function () {
 
       ],
 
-      comment: [
-        [/[^\/*]+/, 'comment'],
-        [/\/\*/, 'comment', '@push'],    // nested comment
-        ["\\*/", 'comment', '@pop'],
-        [/[\/*]/, 'comment']
-      ],
 
       string: [
         [/[^\\"]+/, 'string'],
@@ -123,12 +119,20 @@ amdRequire(['vs/editor/editor.main'], function () {
     }
   });
 
+  monaco.editor.defineTheme('customVisualTheme', {
+    base: 'vs-dark', // can also be vs-dark or hc-black
+    inherit: true, // can also be false to completely replace the builtin rules
+    rules: [
+      { token: 'comment', foreground: '8c8c8c', fontStyle: 'italic' },
+    ]
+  });
+
   window.code = monaco.editor.create(document.getElementById('editor'), {
     value: [
       'ADD R0, R0, #1'
     ].join('\n'),
     language: 'arm',
-    theme: 'vs-dark',
+    theme: 'customVisualTheme',
     renderWhitespace: 'all',
     roundedSelection: false,
     scrollBeyondLastLine: false
