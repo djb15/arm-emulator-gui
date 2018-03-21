@@ -1,20 +1,51 @@
-# ARM Monaco Editor
+# ARM Emulator GUI
 
-> High Level Programming 2018 - Monaco Editor Starter Code
-
-## Version
-
-* v0.9 - pre-release
+> Front end code for ARM emulator with backend written in F# at https://github.com/XavKearney/fsharp-arm-emulator
 
 ## Introduction
-
-This is the skeleton code for the **EE3-22: High Level Programming** final project.
+This project is based on a starter template from https://github.com/filangel/arm-monaco.
 The target language is `F#`, which is transpiled to `Javascript` (`js`) thanks to [Fable](https://fable.io).
 [Github Electron](https://electronjs.org/) is then used to convert the developed web-app to a cross-platform native application,
 providing access to platform-level commands (i.e. file-system, path, multiple processes), which are unavailable to
 (vanilla) browser web-apps.
 [Webpack](https://webpack.js.org/) is the module bundler, responsible for the transpilation and automated building process.
 Finally, [Monaco Editor](https://microsoft.github.io/monaco-editor/) is used for as a self-contained javascript component that implements an editor window which your `F#` code can interact with.
+
+## Features
+
+This GUI seeks to emulate the visUAL implementation at https://salmanarif.bitbucket.io/visual/ as closely as possbile while making improvements and changes.  To be able to make a clear comparison between this and the existing implementation, the front end has been styled fairly similarly.  The key difference is making flags and memory easily accessible in the right panel with the registers.  We believed that flag and memory access was clunky in visUAL, hence the change.  
+
+Below are the list of features (not) implemented in this GUI.
+
+| Feature | Implemented | Different to visUAL |
+| :---:|:---:|:---:|
+| New file | ✔️ |
+| Open file | ✔️ |
+| Save file | ✔️ |
+| Copy registers (by clicking on the register value) | ✔️ | ✔️ |
+| Randomise registers | ✔️ | ✔️ |
+| Change formatting of individual registers | ✔️ |
+| Change formatting of all registers at once | ✔️ | ✔️
+| Labels | ✔️ |
+| Memory | ✔️ |
+| Run code | ✔️ |
+| Reset registers and flags | ✔️ |
+| Reset and run | ✔️ | ✔️ |
+| Infinite branch detection | ✔️ |
+| Breakpoints | ✖️ |
+| Step forwards/backwards | ✖️ |
+| Inline errors | ✔️ | 
+| Set flags by clicking | ✔️ | ✔️
+| Clock cycles | ✖️ |
+| Change font size | ✔️ |
+| Persistent registers and flags | ✔️ | ✔️
+| Execution/Error status | ✔️ | 
+
+
+## Tests
+
+No tests have been written for this front end code.  The backend is extensively tested though at https://github.com/XavKearney/fsharp-arm-emulator.  So you can be sure that the emulator works almost perfectly, however there may still be some front end bugs/glitches.
+
 
 ## Dependencies
 
@@ -53,8 +84,6 @@ Additionally, the section `"scripts"`:
 is defining the in-project shortcut commands, therefore when we use `yarn run <stript_key>` is equivalent
 to calling `<script_value>`. For example, in the root of the project, running in the terminal
 `yarn run launch` is equivalent to running `electron .`.
-Go on define your own shortcuts for commands that you use frequently
-(not-necessary, but can automate development).
 
 ### `webpack.config.js`
 
@@ -91,50 +120,9 @@ var rendererConfig = Object.assign({
 
 ### `src` folder
 
-#### `src/Main` and `main.js`
-
-As already mentioned, Electron bundles `Chromium` and `node.js`.
-`Chromium` uses a [multi-process architecture](https://www.chromium.org/developers/design-documents/multi-process-architecture),
-consisting of a **Main** and (at least) one **Renderer** process, where the main process is responsible for setting-up the windows
-that the renderer process(es) use to for displaying their content, `html` & `js` files - web-app
-(strictly speaking a main process can be run in a headless fashion, without any renderer process,
-but it is out of the scope of this project).
-The `src/Main/Main.fsproj` is a mini-project controlling the main process, which can be used **unchanged** throughout the project.
-
-#### `src/Renderer` and `app/js/renderer.js`
-
-The `Chromium` renderer process `F#` project.
-Sets up callbacks and event-listeners for the DOM elements of `index.html`.
-Use the documentation of each module to follow its logic.
-> This project is incomplete, you are supposed to modify the code to customize the View (GUI) and link it with your emulator.
-
-##### Access to `Emulator` project
-
-You have access to your `Emulator` project by the namespace `Emulator` within the `Renderer` project,
-see `src/Renderer/Renderer.fs` for an example:
-
-```fsharp
-open Emulator
-/// Access to `Emulator` project
-let foo = Emulator.Common.A
-```
-
-##### `Monaco Editor`
-
-```fsharp
-open Ref
-open Update
-/// Get code from editor
-let code = Ref.code()
-/// Set code to editor
-Update.code("mov r7, #5")
-```
-
 #### `src/Emulator`
 
-Your emulator source `F#` code. The development of this project can be done outside (i.e. Visual Studio) and then ported back to this
-project (make sure that the project name and `.fsproj` file are preserved/updated because otherwise any dependency at
-`src/Renderer/Renderer.fsproj` will brake and compilation will fail).
+The emulator source `F#` code. This is used as submodule (from https://github.com/XavKearney/fsharp-arm-emulator) 
 
 ### `app` folder
 
@@ -144,13 +132,10 @@ The web-app, view, project files.
 
 The markup code for the view.
 `src/Renderer/Ref.fs` module accesses the elements defined in this DOM tree.
-> Modify it for customizing the View.
 
 #### `app/css`
 
-`CSS` code to prettify your `index.html` elements.
-The [PhotonKit](http://photonkit.com/) library is used by default, but feel free to replace it with any
-other one you like, such as [Materialize](http://materializecss.com/), [Bootstrap](https://getbootstrap.com/).
+`CSS` code to prettify the `index.html` elements.
 
 #### `app/js`
 
@@ -159,7 +144,6 @@ The `js` scripts loaded by the `index.html`, **after** the DOM elements (statica
 ##### `app/js/editor.js`
 
 `Monaco Editor` setup script.
-> Modify it with care!!
 
 ## Getting Started
 
@@ -170,7 +154,3 @@ The `js` scripts loaded by the `index.html`, **after** the DOM elements (statica
 3. Compile `fsharp` code to `javascript` using `webpack` by executing `yarn run start`
 
 4. Open `electron` application at a new terminal tab by running `yarn run launch`
-
-## Bugs & Issues
-
-Use **Issues** for reporting bugs or request new API functionalities.
