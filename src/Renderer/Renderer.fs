@@ -140,6 +140,17 @@ let init () =
                 Update.changeRegisters returnData.Regs
                 Update.changeEmulationStatus "Emulation Complete" false
 
+                // Format registers properly
+                let updateReg format reg = 
+                    let value = int32 (Ref.register reg).innerHTML
+                    Update.registerFormat reg value format
+
+   
+                Update.registerFormatAll "dec"
+                List.map (updateReg "dec") [0..15]
+                |> List.iter id  
+
+
             | Error err -> 
                 match err with
                 | TopLevel.ERRLINE (errorType,lineNum) ->
