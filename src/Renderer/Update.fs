@@ -192,4 +192,9 @@ let changeEmulationStatus status err =
     | true ->
         el.setAttribute("style", "background: #e57c8e")
 
+
+
+let resetAndRun _ =
+    window?resetRun("")
+
     

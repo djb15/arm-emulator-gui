@@ -79,6 +79,9 @@ let run: HTMLButtonElement =
 let emulator: HTMLElement = 
     Browser.document.getElementById("emulator-details")
 
+let resetRun: HTMLButtonElement = 
+    Browser.document.getElementById("reset-run") :?> HTMLButtonElement
+
 // Reset button
 let reset: HTMLButtonElement = 
     Browser.document.getElementById("reset") :?> HTMLButtonElement

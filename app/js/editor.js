@@ -159,4 +159,9 @@ amdRequire(['vs/editor/editor.main'], function () {
     monaco.editor.setModelMarkers(model, "arm", errorMarker);
   };
 
+  window.resetRun = function(holder){
+    this.document.getElementById("reset").click();
+    this.document.getElementById("run").click();
+  }
+
 });

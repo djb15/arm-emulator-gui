@@ -264,6 +264,10 @@ let init () =
 
     )
 
+    Ref.resetRun.addEventListener_click(fun _ ->
+        Update.resetAndRun ""
+    )
+
     // List.map for all register formating (dec, bin, hex)
     List.collect regFormatCombinations [0..15]
     |> List.map listMapper 
