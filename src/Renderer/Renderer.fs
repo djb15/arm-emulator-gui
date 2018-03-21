@@ -138,6 +138,18 @@ let init () =
                 Update.memory returnData.MM
                 Update.clearError "holder" |> ignore
                 Update.changeRegisters returnData.Regs
+                Update.changeEmulationStatus "Emulation Complete" false
+
+                // Format registers properly
+                let updateReg format reg = 
+                    let value = int32 (Ref.register reg).innerHTML
+                    Update.registerFormat reg value format
+
+   
+                Update.registerFormatAll "dec"
+                List.map (updateReg "dec") [0..15]
+                |> List.iter id  
+
 
             | Error err -> 
                 match err with
@@ -145,20 +157,25 @@ let init () =
                     match errorType with
                     | TopLevel.ERRIARITH err ->
                         Update.error err lineNum |> ignore
+                        Update.changeEmulationStatus (sprintf "Error on line %i" (lineNum + 1u)) true
 
                     | TopLevel.ERRIBITARITH err ->
                         Update.error err lineNum |> ignore 
+                        Update.changeEmulationStatus (sprintf "Error on line %i" (lineNum + 1u)) true
 
                     | TopLevel.ERRIMEM err ->
                         Update.error err lineNum |> ignore
+                        Update.changeEmulationStatus (sprintf "Error on line %i" (lineNum + 1u)) true
 
                     | TopLevel.ERRIMULTMEM err ->
                         Update.error err lineNum |> ignore 
+                        Update.changeEmulationStatus (sprintf "Error on line %i" (lineNum + 1u)) true
                     | _ ->
                         Browser.window.alert("Something went wrong")
                           
                 | TopLevel.ERRTOPLEVEL err ->
-                    Browser.window.alert(err)                   
+                    Browser.window.alert(err)
+                    Update.changeEmulationStatus "Emulation failed" true                  
                 | _ -> 
                     Browser.window.alert("Something went wrong")
 
@@ -215,6 +232,13 @@ let init () =
         
         Update.registerFormatAll "dec"
 
+        Ref.emulator.innerHTML <- "Emulator Off"
+        Ref.emulator.setAttribute("style", "")
+
+        // Reset flags
+        let resetFlags = {C = false; Z = false; N = false; V = false}
+        Update.flags resetFlags
+
         List.map setTo0 [0..15]
         |> List.iter id
     )
@@ -238,6 +262,10 @@ let init () =
 
         saveFileWindow options callback
 
+    )
+
+    Ref.resetRun.addEventListener_click(fun _ ->
+        Update.resetAndRun ""
     )
 
     // List.map for all register formating (dec, bin, hex)
