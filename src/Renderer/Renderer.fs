@@ -285,9 +285,17 @@ let init () =
     Ref.registerRandomiseAll.addEventListener_click(fun _ ->
         let randomUpdate reg = 
             Update.registerFormat reg (System.Random().Next 30000) "hex"
+
+        let setTo0 reg = 
+            Update.registerFormat reg 0 "hex"
         
         List.map randomUpdate [0..12]
         |> List.iter id
+
+        List.map setTo0 [13..15]
+        |> List.iter id
+
+        Update.registerFormatAll "hex"
     )
 
     List.map flagListener ["C";"N";"V";"Z"]
