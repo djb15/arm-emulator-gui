@@ -131,7 +131,7 @@ let init () =
             | Error _ -> failwithf "Failed"
 
         let res = 
-            match Emulator.TopLevel.parseThenExecLines lines initialise (Some Map.empty) with
+            match Emulator.TopLevel.parseThenExecLines lines initialise (Map.empty) with
             | Ok (returnData, returnSymbols) -> 
                 Update.flags returnData.Fl
                 Update.symbols returnSymbols returnData.MM
