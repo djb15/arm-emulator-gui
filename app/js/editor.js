@@ -125,8 +125,7 @@ amdRequire(['vs/editor/editor.main'], function () {
 
   window.code = monaco.editor.create(document.getElementById('editor'), {
     value: [
-      'mov r0, #5',
-      'mov r1, r0'
+      'ADD R0, R0, #1'
     ].join('\n'),
     language: 'arm',
     theme: 'vs-dark',
@@ -134,5 +133,30 @@ amdRequire(['vs/editor/editor.main'], function () {
     roundedSelection: false,
     scrollBeyondLastLine: false
   });
+
+  window.setError = function (err, line){
+    var startIndex = 0;
+    var errorMarker =
+      [{
+        severity: monaco.Severity.Error,
+        startLineNumber: line,
+        startColumn: 1,
+        endLineNumber: line,
+        endColumn: 1000,
+        message: err
+      }];
+    
+    var model = monaco.editor.getModels()[0];
+    
+    monaco.editor.setModelMarkers(model, "arm", errorMarker);
+  };
+
+  window.clearError = function(holder){
+    var errorMarker = [{}];
+    console.log("clear markers");
+    var model = monaco.editor.getModels()[0];
+    
+    monaco.editor.setModelMarkers(model, "arm", errorMarker);
+  };
 
 });

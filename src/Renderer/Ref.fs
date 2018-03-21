@@ -35,7 +35,7 @@ let registerGroup (id: int): HTMLElement =
     Browser.document.getElementById(sprintf "R%i-group" id)
 
 // Top level buttons on register panel
-let regsiterTop : HTMLElement = 
+let registerTop : HTMLElement = 
     Browser.document.getElementById("register-top")
 
 // ------ Begin panel buttons -----
@@ -53,6 +53,15 @@ let labelPanel: HTMLButtonElement =
 let labelsTable: HTMLElement = 
     Browser.document.getElementById("labels-table")
 
+let labelsTableBody: HTMLElement = 
+    Browser.document.getElementById("labels-table-body")
+
+// The table containing memory contents
+let memoryTable: HTMLElement = 
+    Browser.document.getElementById("memory-table")
+
+let memoryTableBody: HTMLElement = 
+    Browser.document.getElementById("memory-table-body")
 
 
 
@@ -60,12 +69,17 @@ let labelsTable: HTMLElement =
 let newCode: HTMLButtonElement =
     Browser.document.getElementById("newCode") :?> HTMLButtonElement
 
-let explore: HTMLButtonElement =
-    Browser.document.getElementById("explore") :?> HTMLButtonElement
+let openFile: HTMLButtonElement =
+    Browser.document.getElementById("open") :?> HTMLButtonElement
 let save: HTMLButtonElement =
     Browser.document.getElementById("save") :?> HTMLButtonElement
 let run: HTMLButtonElement =
     Browser.document.getElementById("run") :?> HTMLButtonElement
+
+// Reset button
+let reset: HTMLButtonElement = 
+    Browser.document.getElementById("reset") :?> HTMLButtonElement
+
 let flag (id: string): HTMLElement =
     Browser.document.getElementById(sprintf "flag_%s" id)
 let code: unit -> string = fun _ ->

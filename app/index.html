@@ -19,7 +19,7 @@
                         <span class="icon icon-plus icon-text"></span>
                         New
                     </button>
-                    <button id="explore" class="btn btn-default">
+                    <button id="open" class="btn btn-default">
                         <span class="icon icon-folder icon-text"></span>
                         Open
                     </button>
@@ -35,6 +35,11 @@
                 <button id="run" class="btn btn-default">
                     <span class="icon icon-leaf icon-text"></span>
                     Run
+                </button>
+
+                <button id="reset" class="btn btn-default">
+                    <span class="icon icon-cross icon-text"></span>
+                    Reset
                 </button>
                 <!-- run btn -->
 
@@ -289,16 +294,18 @@
                                         <th>Contents</th>
                                     </tr>
                                 </thead>
-                                <tbody>
+                                <tbody id='labels-table-body'>
+                                </tbody>
+                            </table>
+                            <table id="memory-table" class="hidden">
+                                <thead>
                                     <tr>
-                                        <br>
+                                        <th>Memory Location</th>
+                                        <th>Memory Contents</th>
                                     </tr>
-                                    <tr>
-                                        <td>Code</td>
-                                        <td>Hello</td>
-                                        <td>0x0</td>
-                                        <td>ADD R0, R1, #1</td>
-                                    </tr>
+                                </thead>
+                                <tbody id="memory-table-body">
+
                                 </tbody>
                             </table>
                             
@@ -316,11 +323,11 @@
                 <button class="btn btn-mini btn-flag">N</button>
                 <button id="flag_N" class="btn btn-mini btn-flag-con">0</button>
                 <button class="btn btn-mini btn-flag">Z</button>
-                <button id="frag_Z" class="btn btn-mini btn-flag-con">0</button>
+                <button id="flag_Z" class="btn btn-mini btn-flag-con">0</button>
                 <button class="btn btn-mini btn-mini btn-flag">C</button>
-                <button id="frag_C" class="btn btn-mini btn-flag-con">0</button>
+                <button id="flag_C" class="btn btn-mini btn-flag-con">0</button>
                 <button class="btn btn-mini btn-flag">V</button>
-                <button id="frag_V" class="btn btn-mini btn-flag-con">0</button>
+                <button id="flag_V" class="btn btn-mini btn-flag-con">0</button>
             </div>
         </footer>
         <!-- Header -->

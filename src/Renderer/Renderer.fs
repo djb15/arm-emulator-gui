@@ -8,14 +8,10 @@
 
 module Renderer
 
-open Fable.Core
 open Fable.Core.JsInterop
 open Fable.Import
-open Electron
-open Node.Exports
-open Fable.PowerPack
-
-open Fable.Import.Browser
+open FSharp.Core
+open CommonData
 
 // open DevTools to see the message
 // Menu -> View -> Toggle Developer Tools
@@ -23,14 +19,27 @@ Browser.console.log "Hi from the renderer.js" |> ignore
 
 open Ref
 open Update
-open Emulator
+open Emulator                  
 
 /// Access to `Emulator` project
 /// ------------- CHANGE THIS --------------
 ///let dummyVariable = Emulator.Common.A
 
 // System wide clipboard
-let clipboard : obj = importMember "electron"
+let clipboard: obj = importMember "electron"
+
+let fs: obj = importDefault "fs"
+
+let errorBox (title: string) (text: string) = (importDefault "electron")?remote?dialog?showErrorBox(title, text)
+
+type FileFilter = {name: string; extensions: string list}
+let fileRestriction = {name = "ARM"; extensions = ["s"]}
+
+type OpenFileOptions = {title: string option; filters: FileFilter list}
+
+let openFileWindow (options: OpenFileOptions) callback = (importDefault "electron")?remote?dialog?showOpenDialog(options, callback)
+
+let saveFileWindow (options: OpenFileOptions) callback = (importDefault "electron")?remote?dialog?showSaveDialog(options, callback)
 
 // Adds event listener for every register format button
 let listMapper (reg,format) =
@@ -68,7 +77,11 @@ let showHideRegs format id =
     let el = Ref.registerGroup id
     el.setAttribute("class", format)
 
-
+ 
+let flagListener flag = 
+    (Ref.flag flag).addEventListener_click(fun _ ->
+        Update.toggleFlag flag
+    )
 
 /// Initialization after `index.html` is loaded
 let init () =
@@ -85,35 +98,78 @@ let init () =
     Ref.newCode.addEventListener_click(fun _ ->
         Update.code("")
     )
-    Ref.save.addEventListener_click(fun _ ->
-        Browser.window.alert (sprintf "%A" (Ref.code ()))
-    )
+
     Ref.run.addEventListener_click(fun _ ->
         let lines = 
             (Ref.code ()).Split('\n')
             |> Array.toList
 
-        let realNone = Microsoft.FSharp.Core.Option.None
+        // Gets initial register values from GUI
+        let initialRegs =
+            let regVal regId = CommonData.register regId, uint32 (Ref.register regId).innerHTML
+            List.map regVal [0..15]
+            |> Map.ofList
+            |> Some
+
+        let initialFlags = 
+            let flagVal flagId = 
+                match (Ref.flag flagId).innerHTML with
+                | "0" -> false
+                | _ -> true
+
+            Some
+                { 
+                    Flags.N = flagVal "N"; 
+                    Flags.Z = flagVal "Z"; 
+                    Flags.C = flagVal "C"; 
+                    Flags.V = flagVal "V"
+                }          
 
         let initialise = 
-            match Emulator.TopLevel.initDataPath realNone realNone realNone with
-            | Microsoft.FSharp.Core.Result.Ok x -> x
-            | Microsoft.FSharp.Core.Result.Error _ -> failwithf "Failed"
+            match Emulator.TopLevel.initDataPath initialFlags initialRegs None with
+            | Ok x -> x
+            | Error _ -> failwithf "Failed"
 
-        let res = Emulator.TopLevel.parseThenExecLines lines initialise realNone
+        let res = 
+            match Emulator.TopLevel.parseThenExecLines lines initialise (Some Map.empty) with
+            | Ok (returnData, returnSymbols) -> 
+                Update.flags returnData.Fl
+                Update.symbols returnSymbols returnData.MM
+                Update.memory returnData.MM
+                Update.clearError "holder" |> ignore
+                Update.changeRegisters returnData.Regs
 
-        Browser.window.alert (sprintf "%A" res)
-    )
+            | Error err -> 
+                match err with
+                | TopLevel.ERRLINE (errorType,lineNum) ->
+                    match errorType with
+                    | TopLevel.ERRIARITH err ->
+                        Update.error err lineNum |> ignore
 
-    (Ref.flag "N").addEventListener_click(fun _ ->
-        Browser.console.log "flag N changed!" |> ignore
-        Update.flag "N" true
+                    | TopLevel.ERRIBITARITH err ->
+                        Update.error err lineNum |> ignore 
+
+                    | TopLevel.ERRIMEM err ->
+                        Update.error err lineNum |> ignore
+
+                    | TopLevel.ERRIMULTMEM err ->
+                        Update.error err lineNum |> ignore 
+                    | _ ->
+                        Browser.window.alert("Something went wrong")
+                          
+                | TopLevel.ERRTOPLEVEL err ->
+                    Browser.window.alert(err)                   
+                | _ -> 
+                    Browser.window.alert("Something went wrong")
+
+        res
     )
 
     Ref.memoryPanel.addEventListener_click(fun _ ->
         
-        Ref.regsiterTop.setAttribute("class", "hidden")
+        Ref.registerTop.setAttribute("class", "hidden")
         Ref.labelsTable.setAttribute("class", "hidden")
+        Ref.memoryTable.setAttribute("class", "")
         
         Ref.memoryPanel.setAttribute("class", "btn target")
         Ref.registerPanel.setAttribute("class", "btn btn-default")
@@ -125,8 +181,9 @@ let init () =
 
     Ref.registerPanel.addEventListener_click(fun _ ->
         
-        Ref.regsiterTop.setAttribute("class", "")
+        Ref.registerTop.setAttribute("class", "")
         Ref.labelsTable.setAttribute("class", "hidden")
+        Ref.memoryTable.setAttribute("class", "hidden")
 
         Ref.memoryPanel.setAttribute("class", "btn btn-default")
         Ref.registerPanel.setAttribute("class", "btn target")
@@ -138,8 +195,9 @@ let init () =
 
     Ref.labelPanel.addEventListener_click(fun _ ->
         
-        Ref.regsiterTop.setAttribute("class", "hidden")
+        Ref.registerTop.setAttribute("class", "hidden")
         Ref.labelsTable.setAttribute("class", "")
+        Ref.memoryTable.setAttribute("class", "hidden")
 
         Ref.memoryPanel.setAttribute("class", "btn btn-default")
         Ref.registerPanel.setAttribute("class", "btn btn-default")
@@ -147,6 +205,39 @@ let init () =
 
         List.map (showHideRegs "hidden") [0..15]
         |> List.iter id
+    )
+
+
+    // Reset button click event listener
+    Ref.reset.addEventListener_click(fun _ ->
+        let setTo0 reg = 
+            Update.registerFormat reg 0 "dec"
+        
+        Update.registerFormatAll "dec"
+
+        List.map setTo0 [0..15]
+        |> List.iter id
+    )
+
+    Ref.openFile.addEventListener_click(fun _ ->
+        let options = {title = None; filters = [fileRestriction]}
+        let callback (filePath: string array) =
+            let formatText err data = 
+                Update.code data
+            fs?readFile(filePath.[0], "utf8", formatText)
+
+        openFileWindow options callback
+    )
+
+    Ref.save.addEventListener_click(fun _ ->
+        let options = {title = None; filters = [fileRestriction]}
+        let callback (fileName: string) =
+            let errorCallback err = 
+                Browser.console.log (err)          
+            fs?writeFile(fileName, Ref.code (), errorCallback)
+
+        saveFileWindow options callback
+
     )
 
     // List.map for all register formating (dec, bin, hex)
@@ -170,5 +261,8 @@ let init () =
         List.map randomUpdate [0..12]
         |> List.iter id
     )
+
+    List.map flagListener ["C";"N";"V";"Z"]
+    |> List.iter id
 
 init()
