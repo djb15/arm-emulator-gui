@@ -155,7 +155,7 @@ amdRequire(['vs/editor/editor.main'], function () {
     ].join('\n'),
     language: 'arm',
     theme: 'customVisualTheme',
-    renderWhitespace: 'all',
+    renderWhitespace: 'none',
     roundedSelection: false,
     scrollBeyondLastLine: false
   });
