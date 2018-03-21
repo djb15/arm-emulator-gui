@@ -235,6 +235,10 @@ let init () =
         Ref.emulator.innerHTML <- "Emulator Off"
         Ref.emulator.setAttribute("style", "")
 
+        // Reset flags
+        let resetFlags = {C = false; Z = false; N = false; V = false}
+        Update.flags resetFlags
+
         List.map setTo0 [0..15]
         |> List.iter id
     )
