@@ -47,6 +47,13 @@ Below are the list of features (not) implemented in this GUI.
 No tests have been written for this front end code.  The backend is extensively tested though at https://github.com/XavKearney/fsharp-arm-emulator.  So you can be sure that the emulator works almost perfectly, however there may still be some front end bugs/glitches.
 
 
+## Issues
+
+During our use of the GUI doing manual testing with random code snippets and cases, we discovered an issue with Fable in regards to the stack.  In the backend emulator code (specifically TopLevel.fs) we detect a possible infinite loop (due to branching for example) when the code is looped 100,000 times.  However, when compiling this code to JavaScript using Fable, an infinite loop throws an error in the console.  Upon investigation we discovered that this error is due to the fact that Fable compiles tail recursive functions to deep stack calls.  As a result the electron app runs out of stack space after about 500 branches.  This is a limiting factor since large programs will branch more than 500 times.  
+
+Unfortunately there is no easy fix for this compilation error since it is caused by the way Fable functions.  The only fix we could think of was to convert the tail recursive function in TopLevel to a set of FOR loops since Fable will be able to compile this properly.  However this goes against the functional nature of F# and would make the code less readable and more messy than before.  Overall, this issue is a limiting factor when considering this prject as a fully fledged replacement for visUAL.
+
+
 ## Dependencies
 
 Before proceeding any further, make sure these packages are installed/setup to your machine:
