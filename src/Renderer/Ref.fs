@@ -15,10 +15,11 @@ open Fable.Import.Browser
 
 let fontSize: HTMLSelectElement =
     Browser.document.getElementById("font-size") :?> HTMLSelectElement
+
 let register (id: int): HTMLElement =
     Browser.document.getElementById(sprintf "R%i" id)
 
-// Register formatting
+// Register format button
 let registerFormat (id: int) (format: string): HTMLButtonElement =
     Browser.document.getElementById(sprintf "R%i-%s" id format) :?> HTMLButtonElement
 
@@ -63,16 +64,15 @@ let memoryTable: HTMLElement =
 let memoryTableBody: HTMLElement = 
     Browser.document.getElementById("memory-table-body")
 
-
-
-// New file button
 let newCode: HTMLButtonElement =
     Browser.document.getElementById("newCode") :?> HTMLButtonElement
 
 let openFile: HTMLButtonElement =
     Browser.document.getElementById("open") :?> HTMLButtonElement
+
 let save: HTMLButtonElement =
     Browser.document.getElementById("save") :?> HTMLButtonElement
+
 let run: HTMLButtonElement =
     Browser.document.getElementById("run") :?> HTMLButtonElement
 
@@ -82,11 +82,11 @@ let emulator: HTMLElement =
 let resetRun: HTMLButtonElement = 
     Browser.document.getElementById("reset-run") :?> HTMLButtonElement
 
-// Reset button
 let reset: HTMLButtonElement = 
     Browser.document.getElementById("reset") :?> HTMLButtonElement
 
 let flag (id: string): HTMLElement =
     Browser.document.getElementById(sprintf "flag_%s" id)
+
 let code: unit -> string = fun _ ->
     window?code?getValue() :?> string

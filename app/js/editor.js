@@ -160,8 +160,13 @@ amdRequire(['vs/editor/editor.main'], function () {
     scrollBeyondLastLine: false
   });
 
+  /// Set an error in the monaco editor window.
+  /// Inputs are the error as a string and the line
+  /// number of the error as an integer
   window.setError = function (err, line){
     var startIndex = 0;
+    
+    // Define an error marker in the monaco desired format
     var errorMarker =
       [{
         severity: monaco.Severity.Error,
@@ -177,14 +182,20 @@ amdRequire(['vs/editor/editor.main'], function () {
     monaco.editor.setModelMarkers(model, "arm", errorMarker);
   };
 
+  /// Clear all errors from the monaco editor window
+  /// Input is holder which in unused.  It is required otherwise
+  /// Fable throws compilation errors about it not being a function
   window.clearError = function(holder){
     var errorMarker = [{}];
-    console.log("clear markers");
+
     var model = monaco.editor.getModels()[0];
     
     monaco.editor.setModelMarkers(model, "arm", errorMarker);
   };
 
+  /// Reset and run the emulator (by emulating clicks)
+  /// holder is the input which is once again a dummy input
+  /// to prevent compilation errors.
   window.resetRun = function(holder){
     this.document.getElementById("reset").click();
     this.document.getElementById("run").click();

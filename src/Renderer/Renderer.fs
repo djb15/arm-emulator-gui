@@ -1,7 +1,7 @@
 (*
     High Level Programming @ Imperial College London # Spring 2018
     Project: A user-friendly ARM emulator in F# and Web Technologies ( Github Electron & Fable Compliler )
-    Contributors: Angelos Filos
+    Contributors: Angelos Filos, Dirk Brink
     Module: Main
     Description: Electron Renderer Process - Script to executed after `index.html` is loaded.
 *)
@@ -21,26 +21,28 @@ open Ref
 open Update
 open Emulator                  
 
-/// Access to `Emulator` project
-/// ------------- CHANGE THIS --------------
-///let dummyVariable = Emulator.Common.A
-
 // System wide clipboard
 let clipboard: obj = importMember "electron"
 
+// JavaScript file handling module
 let fs: obj = importDefault "fs"
 
+/// Show error box in GUI
 let errorBox (title: string) (text: string) = (importDefault "electron")?remote?dialog?showErrorBox(title, text)
 
+// File filter options (not fully implemented but framework setup)
 type FileFilter = {name: string; extensions: string list}
 let fileRestriction = {name = "ARM"; extensions = ["s"]}
 
 type OpenFileOptions = {title: string option; filters: FileFilter list}
 
+// File open window
 let openFileWindow (options: OpenFileOptions) callback = (importDefault "electron")?remote?dialog?showOpenDialog(options, callback)
 
+// File save window
 let saveFileWindow (options: OpenFileOptions) callback = (importDefault "electron")?remote?dialog?showSaveDialog(options, callback)
 
+/// Take a string (hex/dec/bin) and converts into int32
 let parseReg (s:string) =
     let rec parseBin' charLst n i =
         match charLst with
@@ -59,19 +61,24 @@ let parseReg (s:string) =
         |> List.rev
         |> fun chars -> parseBin' chars 0 1
     | _ -> int32 s
-// Adds event listener for every register format button
+
+
+/// Adds event listener for every register format button
+/// Inputs are register number as a string and the desired format
+/// as a string.
 let listMapper (reg,format) =
     (Ref.registerFormat reg format).addEventListener_click(fun _ ->
         let value = parseReg (((Ref.register reg).innerHTML).Trim())
         Update.registerFormat reg value format
     )
 
-// Dec, hex and bin for input register number
+
+/// All format combinations for a register number as input int
 let regFormatCombinations (reg:int) = 
     [reg,"dec"; reg,"hex"; reg,"bin"]
 
 
-// Clipboard for all registers mapping function
+/// Add click event listener for each register as input int
 let regClipboardAccess (reg:int) = 
     let register = Ref.register reg
     register.addEventListener_click(fun _ ->   
@@ -79,6 +86,9 @@ let regClipboardAccess (reg:int) =
         Browser.window.alert(sprintf "Copied R%i" reg)
     )
 
+/// Add click event listeners for the global register format update buttons.
+/// Input is the desired format as a string.
+/// On click all the register formats are updated.
 let regsFormatAll format = 
     let updateReg reg = 
         let value = parseReg (((Ref.register reg).innerHTML).Trim())
@@ -90,12 +100,18 @@ let regsFormatAll format =
         |> List.iter id       
     )
 
-// Show or hide all the registers
-let showHideRegs format id = 
-    let el = Ref.registerGroup id
+
+/// Show/hide given register
+/// Inputs are format of string -> "hidden" or "".
+/// And regId of register as int.
+let showHideRegs format regId = 
+    let el = Ref.registerGroup regId
     el.setAttribute("class", format)
 
  
+/// Click event listener for flag.
+/// Input is flag as a string and on click the flag
+/// is toggled
 let flagListener flag = 
     (Ref.flag flag).addEventListener_click(fun _ ->
         Update.toggleFlag flag
@@ -103,21 +119,23 @@ let flagListener flag =
 
 /// Initialization after `index.html` is loaded
 let init () =
+    // Change font size
     Ref.fontSize.addEventListener_change(fun _ ->
         let size: int =
-            // TODO: error-prone, hardcoded index
-            // of word "Font Size: xx" to slice
             Ref.fontSize.value.[11..]
             |> int
         Browser.console.log "Font size updated" |> ignore
         Update.fontSize size
     )
-    // TODO: Implement actions for the buttons
+
+    // Clear window after clicking New button
     Ref.newCode.addEventListener_click(fun _ ->
         Update.code("")
     )
 
+    // Run emulator after clicking Run button
     Ref.run.addEventListener_click(fun _ ->
+        // Get contents of monaco window as list of strings (for each line)
         let lines = 
             (Ref.code ()).Split('\n')
             |> Array.toList
@@ -129,6 +147,7 @@ let init () =
             |> Map.ofList
             |> Some
 
+        // Gets initial flag values from GUI
         let initialFlags = 
             let flagVal flagId = 
                 match (Ref.flag flagId).innerHTML with
@@ -143,33 +162,33 @@ let init () =
                     Flags.V = flagVal "V"
                 }          
 
+        // Initialise the data path
         let initialise = 
             match Emulator.TopLevel.initDataPath initialFlags initialRegs None with
             | Ok x -> x
             | Error _ -> failwithf "Failed"
 
+        // Run the emulator and handle the response
         let res = 
             match Emulator.TopLevel.parseThenExecLines lines initialise Map.empty with
             | Ok (returnData, returnSymbols) -> 
                 Update.flags returnData.Fl
                 Update.symbols returnSymbols returnData.MM
                 Update.memory returnData.MM
-                Update.clearError "holder" |> ignore
+                Update.clearError "holder" |> ignore // Clears any errors in GUI
                 Update.changeRegisters returnData.Regs
                 Update.changeEmulationStatus "Emulation Complete" false
-
-                
+           
                 // Format registers properly
                 let updateReg format reg =
                     let value = parseReg ((Ref.register reg).innerHTML)
                     Update.registerFormat reg value format
-
-   
+  
                 Update.registerFormatAll "dec"
                 List.map (updateReg "dec") [0..15]
                 |> List.iter id  
 
-
+            // Execution has failed
             | Error err -> 
                 match err with
                 | TopLevel.ERRLINE (errorType,lineNum) ->
@@ -193,16 +212,21 @@ let init () =
                         Update.error err lineNum |> ignore 
                         Update.changeEmulationStatus (sprintf "Error on line %i" (lineNum + 1u)) true
                     | _ ->
+                        // This case should never happen
                         Browser.window.alert("Something went wrong")
+                
                 | TopLevel.ERRTOPLEVEL err ->
                     Browser.window.alert(err)
                     Update.changeEmulationStatus "Emulation failed" true                  
                 | _ -> 
+                    // This case should never happen
                     Browser.window.alert("Something went wrong")
 
+        // Run emulator
         res
     )
 
+    // Change panel in right half of window to memory
     Ref.memoryPanel.addEventListener_click(fun _ ->
         
         Ref.registerTop.setAttribute("class", "hidden")
@@ -217,6 +241,7 @@ let init () =
         |> List.iter id
     )
 
+    // Change panel in right half of window to registers
     Ref.registerPanel.addEventListener_click(fun _ ->
         
         Ref.registerTop.setAttribute("class", "")
@@ -231,6 +256,7 @@ let init () =
         |> List.iter id
     )
 
+    // Change panel in right half of window to labels
     Ref.labelPanel.addEventListener_click(fun _ ->
         
         Ref.registerTop.setAttribute("class", "hidden")
@@ -245,8 +271,7 @@ let init () =
         |> List.iter id
     )
 
-
-    // Reset button click event listener
+    // Reset registers and flags
     Ref.reset.addEventListener_click(fun _ ->
         let setTo0 reg = 
             Update.registerFormat reg 0 "dec"
@@ -256,7 +281,6 @@ let init () =
         Ref.emulator.innerHTML <- "Emulator Off"
         Ref.emulator.setAttribute("style", "")
 
-        // Reset flags
         let resetFlags = {C = false; Z = false; N = false; V = false}
         Update.flags resetFlags
 
@@ -264,9 +288,12 @@ let init () =
         |> List.iter id
     )
 
+    // Open file from computer
     Ref.openFile.addEventListener_click(fun _ ->
         let options = {title = None; filters = [fileRestriction]}
         let callback (filePath: string array) =
+            // Callback not handled for error case (throws error in js console) but does
+            // not crash the gui -> Should be improved
             let formatText err data = 
                 Update.code data
             fs?readFile(filePath.[0], "utf8", formatText)
@@ -274,6 +301,7 @@ let init () =
         openFileWindow options callback
     )
 
+    // Save contents of monaco window to file
     Ref.save.addEventListener_click(fun _ ->
         let options = {title = None; filters = [fileRestriction]}
         let callback (fileName: string) =
@@ -285,11 +313,12 @@ let init () =
 
     )
 
+    // Reset and run the emulator
     Ref.resetRun.addEventListener_click(fun _ ->
         Update.resetAndRun ""
     )
 
-    // List.map for all register formating (dec, bin, hex)
+    // All register formating (dec, bin, hex)
     List.collect regFormatCombinations [0..15]
     |> List.map listMapper 
     |> List.iter id
@@ -302,7 +331,7 @@ let init () =
     List.map regsFormatAll ["dec";"bin";"hex"]
     |> List.iter id
 
-    // Generate random numbers up to 30,000 just for demonstration (excluding SP, LR, PC)
+    // Generate random numbers up to 30,000 for all registers (excluding SP, LR, PC)
     Ref.registerRandomiseAll.addEventListener_click(fun _ ->
         let randomUpdate reg = 
             Update.registerFormat reg (System.Random().Next 30000) "hex"
