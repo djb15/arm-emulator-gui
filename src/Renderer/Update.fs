@@ -43,17 +43,20 @@ let registerFormat (id: int) (value: int) (format: string) =
         binButton.setAttribute("class", "btn btn-enc")
         el.innerHTML <- sprintf "0x%X" value
     | _ ->
-        let rec intToBinary i =
-            match i with
-            | 0 | 1 -> string i
-            | _ ->
-                let bit = string (i % 2)
-                (intToBinary (i / 2)) + bit
+        let rec intToBinary i n =
+            let space = 
+                match n % 4 = 0 with
+                | true -> " "
+                | false -> ""
+            match n >= 0, ((i >>> n) &&& 1u) with
+            | true, 0u -> "0" + space :: intToBinary i (n-1)
+            | true, _ -> "1" + space :: intToBinary i (n-1)
+            | false, _ -> []
         
         hexButton.setAttribute("class", "btn btn-enc")
         decButton.setAttribute("class", "btn btn-enc")
         binButton.setAttribute("class", "btn btn-enc target")
-        el.innerHTML <- sprintf "0b%s" (intToBinary value)
+        el.innerHTML <- sprintf "0b%s" (String.concat "" (intToBinary (uint32 value) 31))
 
 
 let registerFormatAll (format: string) = 
@@ -70,7 +73,7 @@ let registerFormatAll (format: string) =
         hexButton.setAttribute("class", "btn btn-enc btn-enc-top target")
         decButton.setAttribute("class", "btn btn-enc btn-enc-top")
         binButton.setAttribute("class", "btn btn-enc btn-enc-top")
-    | _ ->
+    | "bin" ->
         hexButton.setAttribute("class", "btn btn-enc btn-enc-top")
         decButton.setAttribute("class", "btn btn-enc btn-enc-top")
         binButton.setAttribute("class", "btn btn-enc btn-enc-top target")
