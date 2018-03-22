@@ -62,7 +62,7 @@ let parseReg (s:string) =
 // Adds event listener for every register format button
 let listMapper (reg,format) =
     (Ref.registerFormat reg format).addEventListener_click(fun _ ->
-        let value = parseReg (((Ref.register reg).innerHTML).Trim()).[2..]
+        let value = parseReg (((Ref.register reg).innerHTML).Trim())
         Update.registerFormat reg value format
     )
 
