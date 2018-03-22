@@ -73,7 +73,7 @@ let registerFormatAll (format: string) =
         hexButton.setAttribute("class", "btn btn-enc btn-enc-top target")
         decButton.setAttribute("class", "btn btn-enc btn-enc-top")
         binButton.setAttribute("class", "btn btn-enc btn-enc-top")
-    | _ ->
+    | "bin" ->
         hexButton.setAttribute("class", "btn btn-enc btn-enc-top")
         decButton.setAttribute("class", "btn btn-enc btn-enc-top")
         binButton.setAttribute("class", "btn btn-enc btn-enc-top target")

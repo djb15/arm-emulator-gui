@@ -41,10 +41,28 @@ let openFileWindow (options: OpenFileOptions) callback = (importDefault "electro
 
 let saveFileWindow (options: OpenFileOptions) callback = (importDefault "electron")?remote?dialog?showSaveDialog(options, callback)
 
+let parseReg (s:string) =
+    let rec parseBin' charLst n i =
+        match charLst with
+        | [] -> n
+        | '1' :: rest ->
+            parseBin' rest (n + i) (i*2)
+        | '0' :: rest ->
+            parseBin' rest n (i*2)
+        | _ :: rest ->
+            parseBin' rest n i
+    match s with
+    | x when x.StartsWith("0b") ->
+        x.[2..]
+        |> Seq.map System.Char.ToUpper
+        |> Seq.toList
+        |> List.rev
+        |> fun chars -> parseBin' chars 0 1
+    | _ -> int32 s
 // Adds event listener for every register format button
 let listMapper (reg,format) =
     (Ref.registerFormat reg format).addEventListener_click(fun _ ->
-        let value = int32 (Ref.register reg).innerHTML
+        let value = parseReg (((Ref.register reg).innerHTML).Trim()).[2..]
         Update.registerFormat reg value format
     )
 
@@ -63,7 +81,7 @@ let regClipboardAccess (reg:int) =
 
 let regsFormatAll format = 
     let updateReg reg = 
-        let value = int32 (Ref.register reg).innerHTML
+        let value = parseReg (((Ref.register reg).innerHTML).Trim())
         Update.registerFormat reg value format
 
     (Ref.registerFormatAll format).addEventListener_click(fun _ ->
@@ -140,9 +158,10 @@ let init () =
                 Update.changeRegisters returnData.Regs
                 Update.changeEmulationStatus "Emulation Complete" false
 
+                
                 // Format registers properly
-                let updateReg format reg = 
-                    let value = int32 (Ref.register reg).innerHTML
+                let updateReg format reg =
+                    let value = parseReg ((Ref.register reg).innerHTML)
                     Update.registerFormat reg value format
 
    
